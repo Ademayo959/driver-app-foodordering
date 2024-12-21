@@ -30,6 +30,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import { Livvic_400Regular, Livvic_700Bold } from "@expo-google-fonts/livvic";
 import AppLoading from "../components/Loader";
+import DriverRegistration from "../screens/InfoScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -217,6 +218,11 @@ export default function AppStack() {
       <Stack.Screen
         name="Favorites"
         component={FavoritesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Info"
+        component={DriverRegistration}
         options={{ headerShown: false }}
       />
       <Stack.Screen

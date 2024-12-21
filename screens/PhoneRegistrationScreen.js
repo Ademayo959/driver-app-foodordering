@@ -33,7 +33,7 @@ export default function PhoneRegistrationScreen({ navigation }) {
 
         <View style={styles.phoneContainer}>
           <View style={styles.countryCode}>
-            <Text style={styles.countryCodeText}>🇮🇪 +353</Text>
+            <Text style={styles.countryCodeText}>🇳🇬 +234</Text>
           </View>
           <TextInput
             style={styles.phoneInput}

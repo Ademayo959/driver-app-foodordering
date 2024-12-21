@@ -5,13 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // You can choose other icon sets like FontAwesome or MaterialIcons
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function SignUpScreen({ navigation }) {
+function SignUpScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,21 +24,14 @@ export default function SignUpScreen({ navigation }) {
       {/* Red Circle Decoration */}
       <View style={styles.redCircle} />
       
-      {/* Back Button */}
-      <TouchableOpacity 
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Icon name="chevron-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
-      
       <View style={styles.content}>
         <Text style={styles.title}>Sign Up</Text>
         
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Full name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Full name"
+            placeholder="Enter your full name"
             placeholderTextColor="#666"
             value={fullName}
             onChangeText={setFullName}
@@ -47,9 +39,10 @@ export default function SignUpScreen({ navigation }) {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>E-mail</Text>
           <TextInput
             style={styles.input}
-            placeholder="E-mail"
+            placeholder="Enter your email"
             placeholderTextColor="#666"
             value={email}
             onChangeText={setEmail}
@@ -59,9 +52,10 @@ export default function SignUpScreen({ navigation }) {
         </View>
 
         <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Password</Text>
           <TextInput
-            style={[styles.input, { paddingRight: 50 }]}
-            placeholder="Password"
+            style={styles.passwordInput}
+            placeholder="Enter your password"
             placeholderTextColor="#666"
             value={password}
             onChangeText={setPassword}
@@ -71,8 +65,11 @@ export default function SignUpScreen({ navigation }) {
             style={styles.eyeIcon}
             onPress={() => setShowPassword(!showPassword)}
           >
-            <Icon name={showPassword ? "eye" : "eye-off"} size={20} color="#666" />
-
+            <Ionicons 
+              name={showPassword ? "eye" : "eye-off"} 
+              size={24} 
+              color="#666" 
+            />
           </TouchableOpacity>
         </View>
 
@@ -89,9 +86,6 @@ export default function SignUpScreen({ navigation }) {
             <Text style={styles.loginLink}>Login</Text>
           </TouchableOpacity>
         </View>
-
-        
-        
       </View>
     </KeyboardAvoidingView>
   );
@@ -111,51 +105,54 @@ const styles = StyleSheet.create({
     borderRadius: 125,
     backgroundColor: '#DC2626',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    width: 40,
-    height: 40,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
   content: {
     flex: 1,
     padding: 20,
     justifyContent: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 30,
+    marginBottom: 40,
   },
   inputContainer: {
-    marginBottom: 20,
-    position: 'relative',
+    marginBottom: 25,
+  },
+  inputLabel: {
+    color: '#666',
+    marginBottom: 8,
+    fontSize: 16,
   },
   input: {
     backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    padding: 15,
+    borderRadius: 16,
+    padding: 20,
     color: '#FFFFFF',
     fontSize: 16,
+    height: 60,
+  },
+  passwordInput: {
+    backgroundColor: '#2A2A2A',
+    borderRadius: 16,
+    padding: 20,
+    color: '#FFFFFF',
+    fontSize: 16,
+    height: 60,
+    // borderColor: '#0066FF',
+    borderWidth: 1,
   },
   eyeIcon: {
     position: 'absolute',
-    right: 15,
-    top: 15,
+    right: 20,
+    top: 45,
   },
   signUpButton: {
     backgroundColor: '#DC2626',
-    borderRadius: 8,
-    padding: 15,
+    borderRadius: 30,
+    padding: 20,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 20,
   },
   signUpButtonText: {
     color: '#FFFFFF',
@@ -165,50 +162,17 @@ const styles = StyleSheet.create({
   loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 25,
   },
   loginText: {
     color: '#666',
+    fontSize: 16,
   },
   loginLink: {
     color: '#DC2626',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 20,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#333',
-  },
-  dividerText: {
-    color: '#666',
-    paddingHorizontal: 10,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    padding: 15,
-    flex: 0.48,
-    justifyContent: 'center',
-  },
-  socialIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  socialButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
   },
 });
+
+export default SignUpScreen;
+

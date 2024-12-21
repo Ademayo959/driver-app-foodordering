@@ -18,7 +18,6 @@ export default function AuthNavigator() {
         cardStyle: { backgroundColor: '#101112' }
       }}
     >
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="Test" component={TestScreen} />
       <Stack.Screen name="PhoneRegistration" component={PhoneRegistrationScreen} />

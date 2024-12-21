@@ -23,14 +23,14 @@ export const CallProvider = ({ children, navigation }) => {
   const audioRecording = useRef(null);
   const audioPlayer = useRef(null);
 
-  useEffect(() => {
-    initializeWebSocket();
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   initializeWebSocket();
+  //   return () => {
+  //     if (ws.current) {
+  //       ws.current.close();
+  //     }
+  //   };
+  // }, []);
 
   const initializeWebSocket = () => {
     ws.current = new WebSocket('ws://192.168.1.115:8080');
