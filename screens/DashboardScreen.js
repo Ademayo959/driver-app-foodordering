@@ -85,7 +85,7 @@ const getStyles = (theme) =>
       justifyContent: "center",
       marginTop: 10,
     },
-    onlineDotContainer : {
+    onlineDotContainer: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
@@ -109,7 +109,7 @@ const getStyles = (theme) =>
       backgroundColor: "#ff3b30",
       borderRadius: 15,
       padding: 20,
-      marginTop: 20,
+      marginTop: 0,
     },
     balanceLabel: {
       color: "rgba(255,255,255,0.8)",
@@ -185,6 +185,7 @@ const getStyles = (theme) =>
       backgroundColor: theme === "light" ? "#F5F5F5" : "#222",
       borderRadius: 15,
       padding: 15,
+      marginTop:10
     },
     packageIcon: {
       backgroundColor: "#ff3b30",
@@ -344,7 +345,7 @@ const HomeScreen = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View>
-          <Text style={styles.headerTitle}>
+          {/* <Text style={styles.headerTitle}>
             {" "}
             <View style={styles.onlineStatus}>
               <View style={styles.onlineDotContainer}>
@@ -352,7 +353,7 @@ const HomeScreen = ({ navigation }) => {
               </View>
               <Text style={styles.onlineText}>Online</Text>
             </View>
-          </Text>
+          </Text> */}
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.iconButton} onPress={toggleTheme}>
               <Icon
@@ -403,6 +404,28 @@ const HomeScreen = ({ navigation }) => {
               />
             </View>
           </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.alertBox}
+            onPress={() => navigation.navigate("CarType")}
+          >
+            <View style={styles.alertContent}>
+              <View style={styles.alertIconContainer}>
+                <Icon name="info" size={24} color="#fff" />
+              </View>
+              <View style={styles.alertTextContainer}>
+                <Text style={styles.alertTitle}>Upload Vehicle Details</Text>
+                <Text style={styles.alertDescription}>
+                  Tap here to Upload Details to Verify Account
+                </Text>
+              </View>
+              <Icon
+                name="chevron-right"
+                size={24}
+                color={theme === "light" ? "#000" : "#fff"}
+              />
+            </View>
+          </TouchableOpacity>
 
           <View style={styles.statsContainer}>
             <View style={styles.statBox}>
@@ -429,7 +452,7 @@ const HomeScreen = ({ navigation }) => {
 
             <TouchableOpacity
               style={styles.deliveryItem}
-              onPress={() => navigation.navigate("OnGoingDelivery")}
+              onPress={() => navigation.navigate("Incoming")}
             >
               <View style={styles.packageIcon}>
                 <Icon name="package" size={20} color="white" />
@@ -440,6 +463,57 @@ const HomeScreen = ({ navigation }) => {
               </View>
               <Text style={styles.deliveryTime}>28 Feb, 10:10 AM</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.deliverySection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Past Deliveries</Text>
+              <TouchableOpacity>
+                <Text style={styles.viewAll}>View All</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.deliveryItem}
+              onPress={() => navigation.navigate("TrackOrder")}
+            >
+              <View style={styles.packageIcon}>
+                <Icon name="package" size={20} color="white" />
+              </View>
+              <View style={styles.deliveryInfo}>
+                <Text style={styles.packageTitle}>Package 24 to 41B</Text>
+                <Text style={styles.packageStatus}>Going on</Text>
+              </View>
+              <Text style={styles.deliveryTime}>28 Feb, 10:10 AM</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.deliveryItem}
+              onPress={() => navigation.navigate("TrackOrder")}
+            >
+              <View style={styles.packageIcon}>
+                <Icon name="package" size={20} color="white" />
+              </View>
+              <View style={styles.deliveryInfo}>
+                <Text style={styles.packageTitle}>Package 24 to 41B</Text>
+                <Text style={styles.packageStatus}>Going on</Text>
+              </View>
+              <Text style={styles.deliveryTime}>28 Feb, 10:10 AM</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+                          style={styles.deliveryItem}
+                          onPress={() => navigation.navigate("TrackOrder")}
+                        >
+                          <View style={styles.packageIcon}>
+                            <Icon name="package" size={20} color="white" />
+                          </View>
+                          <View style={styles.deliveryInfo}>
+                            <Text style={styles.packageTitle}>Package 24 to 41B</Text>
+                            <Text style={styles.packageStatus}>Going on</Text>
+                          </View>
+                          <Text style={styles.deliveryTime}>28 Feb, 10:10 AM</Text>
+                        </TouchableOpacity>
           </View>
         </ScrollView>
       </Animated.View>

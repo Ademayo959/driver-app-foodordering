@@ -12,6 +12,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import CartScreen from "../screens/CartScreen";
 import FoodDetailsScreen from "../screens/FoodDetailsScreen";
 import ReviewsScreen from "../screens/ReviewsScreen";
+import IncomingScreen from "../screens/IncomingScreen";
 import SideMenuScreen from "../screens/SideMenuScreen";
 import OrdersScreen from "../screens/OrdersScreen";
 import TrackOrderScreen from "../screens/TrackOrderScreen";
@@ -23,6 +24,8 @@ import PaymentMethod from "../screens/PaymentMethod";
 import NotificationScreen from "../screens/Notification";
 import CallScreen from "../screens/CallScreen";
 import WalletScreen from "../screens/WalletScreen";
+import SettingScreen from "../screens/SettingScreen";
+
 import { useFonts } from "expo-font";
 import {
   Poppins_400Regular,
@@ -31,6 +34,9 @@ import {
 import { Livvic_400Regular, Livvic_700Bold } from "@expo-google-fonts/livvic";
 import AppLoading from "../components/Loader";
 import DriverRegistration from "../screens/InfoScreen";
+import RideDetails from "../screens/RideDetails";
+import Performance from "../screens/Performance";
+import CarType from "../screens/CarType";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -102,11 +108,8 @@ function TabNavigator() {
             case "Home":
               iconName = "home";
               break;
-            case "Cart":
-              iconName = "shopping-bag";
-              break;
-            case "Orders":
-              iconName = "compass";
+            case "Settings":
+              iconName = "settings";
               break;
             case "Wallet":
               iconName = "credit-card";
@@ -157,36 +160,21 @@ function TabNavigator() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
         }}
       />
-      <Tab.Screen
-        name="Cart"
-        component={CartScreen}
-        options={{ headerShown: false }}
-        listeners={{
-          tabPress: () =>
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-        }}
-      />
-      <Tab.Screen
-        name="Orders"
-        component={OrdersScreen}
-        options={{ headerShown: false }}
-        listeners={{
-          tabPress: () =>
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-        }}
-      />
-      {/* <Tab.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={{ headerShown: false }}
-        listeners={{
-          tabPress: () =>
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-        }}
-      /> */}
+     
+      
       <Tab.Screen
         name="Wallet"
         component={WalletScreen}
+        options={{ headerShown: false }}
+        listeners={{
+          tabPress: () =>
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+        }}
+      />
+      
+      <Tab.Screen
+        name="Settings"
+        component={SettingScreen}
         options={{ headerShown: false }}
         listeners={{
           tabPress: () =>
@@ -236,8 +224,18 @@ export default function AppStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="Orders"
+        component={OrdersScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="Reviews"
         component={ReviewsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Incoming"
+        component={IncomingScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -258,6 +256,21 @@ export default function AppStack() {
       <Stack.Screen
         name="Notification"
         component={NotificationScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RideDetails"
+        component={RideDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Performance"
+        component={Performance}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CarType"
+        component={CarType}
         options={{ headerShown: false }}
       />
       <Stack.Screen

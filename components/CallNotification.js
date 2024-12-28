@@ -8,7 +8,7 @@ import { Poppins_400Regular, Poppins_700Bold } from "@expo-google-fonts/poppins"
 import { Livvic_400Regular, Livvic_700Bold } from "@expo-google-fonts/livvic";
 import * as Haptics from "expo-haptics";
 
-const CallNotification = () => {
+const IncomingNotification = () => {
   const { currentCall, declineCall, acceptCall } = useCall();
   const navigation = useNavigation();
   const [loaded] = useFonts({
@@ -109,5 +109,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CallNotification;
+export default IncomingNotification;
 

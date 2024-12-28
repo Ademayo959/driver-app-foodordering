@@ -1,200 +1,216 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   TouchableOpacity,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { ThemeContext } from '../context/AuthContext';
-import { useFonts } from 'expo-font';
-import { Livvic_400Regular, Livvic_700Bold } from '@expo-google-fonts/livvic';
+  StatusBar,
+  ScrollView,
+} from "react-native";
+import Icon from "react-native-vector-icons/Feather";
+import { ThemeContext } from "../context/AuthContext";
+import {
+  useFonts,
+  Livvic_400Regular,
+  Livvic_700Bold,
+} from "@expo-google-fonts/livvic";
+import AppLoading from "../components/Loader";
+import Svg, { Path } from "react-native-svg";
+import { Dimensions } from "react-native";
+const { width } = Dimensions.get("window");
 
-const Transaction = ({ title, date, amount }) => {
-  const { theme } = useContext(ThemeContext);
-  const isPositive = amount.startsWith('+');
-  
-  const styles = StyleSheet.create({
-    transactionItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 15,
-      borderBottomWidth: 1,
-      // paddingBottom:50,
-      borderBottomColor: theme === 'light' ? '#eee' : '#333',
-    },
-    transactionTitle: {
-      fontSize: 16,
-      fontFamily: 'Livvic_400Regular',
-      marginBottom: 5,
-      color: theme === 'light' ? '#000' : '#fff',
-    },
-    transactionDate: {
-      fontSize: 14,
-      fontFamily: 'Livvic_400Regular',
-      color: theme === 'light' ? '#666' : '#999',
-    },
-    transactionAmount: {
-      fontSize: 16,
-      fontFamily: 'Livvic_700Bold',
-    },
-  });
+const ActionButton = ({ icon, title, subtitle }) => {
+  const styles = getStyles("dark"); // Always dark theme for buttons
 
   return (
-    <View style={styles.transactionItem}>
-      <View>
-        <Text style={styles.transactionTitle}>{title}</Text>
-        <Text style={styles.transactionDate}>{date}</Text>
+    <View style={styles.actionButton}>
+      <View style={styles.actionIcon}>
+        <Icon name={icon} size={24} color="#fff" />
       </View>
-      <Text style={[
-        styles.transactionAmount,
-        { color: isPositive ? '#4CAF50' : '#FF5252' }
-      ]}>
-        {amount}
-      </Text>
+      <Text style={styles.actionTitle}>{title}</Text>
+      <Text style={styles.actionSubtitle}>{subtitle}</Text>
     </View>
   );
 };
 
-const WalletScreen = () => {
+const MenuItem = ({ title, onPress }) => {
   const { theme } = useContext(ThemeContext);
-  
+  const styles = getStyles(theme);
+
+  return (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+      <Text style={styles.menuItemText}>{title}</Text>
+      <Icon name="chevron-right" size={24} color="#4169E1" />
+    </TouchableOpacity>
+  );
+};
+
+const DecorativeLine = () => (
+  <Svg width={width} height="40" style={StyleSheet.absoluteFill}>
+    <Path
+      d="M0,20 Q80,40 160,20 T320,20"
+      stroke="rgba(255,255,255,0.1)"
+      strokeWidth="2"
+      fill="none"
+    />
+  </Svg>
+);
+
+const MyAccount = ({ navigation }) => {
+  const { theme } = useContext(ThemeContext);
   let [fontsLoaded] = useFonts({
     Livvic_400Regular,
     Livvic_700Bold,
   });
 
   if (!fontsLoaded) {
-    return null;
+    return <AppLoading />;
   }
 
-  const styles = StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: theme === 'light' ? '#FFFFFF' : '#101112',
-    },
-    container: {
-      flex: 1,
-      padding: 20,
-    },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 30,
-    },
-    headerTitle: {
-      fontSize: 24,
-      fontFamily: 'Livvic_700Bold',
-      color: theme === 'light' ? '#000' : '#fff',
-    },
-    card: {
-      backgroundColor: '#000066',
-      borderRadius: 20,
-      padding: 24,
-      marginBottom: 30,
-    },
-    debitText: {
-      color: '#fff',
-      fontSize: 16,
-      fontFamily: 'Livvic_400Regular',
-      marginBottom: 10,
-    },
-    bankName: {
-      color: '#fff',
-      fontSize: 20,
-      fontFamily: 'Livvic_700Bold',
-      position: 'absolute',
-      right: 24,
-      top: 24,
-    },
-    cardNumber: {
-      color: '#fff',
-      fontSize: 22,
-      fontFamily: 'Livvic_400Regular',
-      letterSpacing: 2,
-      marginVertical: 20,
-    },
-    cardFooter: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginTop: 20,
-    },
-    balanceText: {
-      color: '#fff',
-      fontFamily: 'Livvic_400Regular',
-    },
-    balanceAmount: {
-      color: '#fff',
-      fontSize: 18,
-      fontFamily: 'Livvic_700Bold',
-    },
-    validThru: {
-      color: '#fff',
-      fontFamily: 'Livvic_400Regular',
-    },
-    transactionsTitle: {
-      fontSize: 20,
-      fontFamily: 'Livvic_700Bold',
-      marginBottom: 10,
-      color: theme === 'light' ? '#000' : '#fff',
-    },
-    monthText: {
-      fontSize: 16,
-      fontFamily: 'Livvic_400Regular',
-      color: theme === 'light' ? '#666' : '#999',
-      marginBottom: 20,
-    },
-  });
+  const styles = getStyles(theme);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        barStyle={theme === "light" ? "dark-content" : "light-content"}
+      />
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Wallet</Text>
+          <Text style={styles.headerTitle}>My Account</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.debitText}>Debit.</Text>
-          <Text style={styles.bankName}>TIVA-BANK</Text>
-          <Text style={styles.cardNumber}>5355 0348 5945 5045</Text>
-          <View style={styles.cardFooter}>
-            <View>
-              <Text style={styles.balanceText}>Total Balance</Text>
-              <Text style={styles.balanceAmount}>N 14,000</Text>
-            </View>
-            <View>
-              <Text style={styles.validThru}>VALID THRU</Text>
-              <Text style={styles.balanceText}>12/24</Text>
+        <View style={styles.content}>
+          <View style={styles.balanceCard}>
+            <DecorativeLine />
+            <Text style={styles.balanceLabel}>Total balance</Text>
+            <Text style={styles.balanceAmount}>N250,000.01</Text>
+            <View style={styles.actionsGrid}>
+              <ActionButton
+                icon="file-text"
+                title="Wallet"
+                subtitle="Statement"
+              />
+              <ActionButton icon="send" title="Send" subtitle="Amount" />
+              <ActionButton
+                icon="download"
+                title="Received"
+                subtitle="Amount"
+              />
             </View>
           </View>
+
+          <MenuItem
+            title="My Performance"
+            onPress={() => navigation.navigate("Performance")}
+          />
+          <MenuItem
+            title="Your Plan and Bank Details"
+            onPress={() => navigation.navigate("PaymentMethods")}
+          />
+          <MenuItem
+            title="Update Vehicle"
+            onPress={() => navigation.navigate("CarType")}
+          />
+          <MenuItem title="My Documents"
+          onPress={() => navigation.navigate("Info")}
+          
+          />
         </View>
-
-        <Text style={styles.transactionsTitle}>Transactions</Text>
-        <Text style={styles.monthText}>June 2024</Text>
-
-        <Transaction
-          title="Tip to Rider"
-          date="Friday 7th June, 2024"
-          amount="-N400"
-        />
-        <Transaction
-          title="Order Purchase 1 portion of Catfish"
-          date="Friday 7th June, 2024"
-          amount="-N6800"
-        />
-        <Transaction
-          title="Wallet Top-Up"
-          date="Friday 7th June, 2024"
-          amount="+N14000"
-        />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default WalletScreen;
+const getStyles = (theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
+    },
+    container: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontFamily: "Livvic_700Bold",
+      color: theme === "light" ? "#000" : "#fff",
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: 20,
+    },
+    balanceCard: {
+      backgroundColor: "#ff3b30",
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 24,
+      overflow: "hidden",
+    },
+    balanceLabel: {
+      fontSize: 16,
+      fontFamily: "Livvic_400Regular",
+      color: "#fff",
+      opacity: 0.8,
+    },
+    balanceAmount: {
+      fontSize: 32,
+      fontFamily: "Livvic_700Bold",
+      color: "#fff",
+      marginVertical: 8,
+    },
+    actionsGrid: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 20,
+      backgroundColor: "#1A1B1E",
+      borderRadius: 12,
+      padding: 16,
+    },
+    actionButton: {
+      alignItems: "center",
+      width: "25%",
+    },
+    actionIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: "#2C2D30",
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    actionTitle: {
+      fontSize: 12,
+      fontFamily: "Livvic_400Regular",
+      color: "#fff",
+      textAlign: "center",
+    },
+    actionSubtitle: {
+      fontSize: 12,
+      fontFamily: "Livvic_400Regular",
+      color: "#666",
+      textAlign: "center",
+    },
+    menuItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme === "light" ? "#E0E0E0" : "#1A1B1E",
+    },
+    menuItemText: {
+      fontSize: 16,
+      fontFamily: "Livvic_400Regular",
+      color: theme === "light" ? "#000" : "#fff",
+    },
+  });
+
+export default MyAccount;

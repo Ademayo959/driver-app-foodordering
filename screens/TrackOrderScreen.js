@@ -1,261 +1,280 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  ImageBackground,
-  Linking,
   ActivityIndicator,
+  Dimensions,
+  Linking,
+  ScrollView,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
+
 import Icon from "react-native-vector-icons/Feather";
 import { useFonts } from "expo-font";
+import {
+  Poppins_400Regular,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
 import { Livvic_400Regular, Livvic_700Bold } from "@expo-google-fonts/livvic";
 import AppLoading from "../components/Loader";
 import { ThemeContext } from "../context/AuthContext";
-import { ScrollView } from "react-native";
-import trackerImage from "../assets/tracker.png";
-const getStyles = (theme) => ({
-  background: {
-    flex: 1,
-    backgroundColor: "#101112",
-  },
-  safeArea: {
-    flex: 1,
-  },
-  Borderedcard: {
-    padding: 25,
-    borderColor: theme === "light" ? "#EFEFEF" : "#222",
-    borderWidth: 1,
-    borderRadius: 20,
-    marginBottom: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: 20,
-    color: "#fff",
-    fontFamily: "Livvic_700Bold",
-  },
-  card: {
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor:
-      theme === "light"
-        ? "rgba(255, 255, 255, 1.95)"
-        : "rgba(16, 17, 18, 1.95)",
-    height: "100%",
-  },
-  cardTitle: {
-    fontSize: 20,
-    color: "#fff",
-    fontFamily: "Livvic_700Bold",
-    marginBottom: 8,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 24,
-    fontFamily: "Livvic_400Regular",
-  },
-  text: {
-    color: theme === "light" ? "#000" : "#fff",
-  },
-  subtext: {
-    color: theme === "light" ? "#666" : "#999",
-  },
-  stepsContainer: {
-    marginBottom: 0,
-  },
-  stepContainer: {
-    marginBottom: 35,
-  },
-  stepContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  stepIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#666",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  stepIconCompleted: {
-    backgroundColor: "#DC2626",
-    borderColor: "#DC2626",
-  },
-  stepIconCurrent: {
-    borderColor: "#DC2626",
-  },
-  currentDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#DC2626",
-  },
-  inactiveDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#666",
-  },
-  stepText: {
-    flex: 1,
-  },
-  stepTitle: {
-    fontSize: 16,
-    color: "#fff",
-    fontFamily: "Livvic_700Bold",
-    marginBottom: 4,
-  },
-  stepDescription: {
-    fontSize: 14,
-    color: "#666",
-    fontFamily: "Livvic_400Regular",
-  },
-  stepLine: {
-    position: "absolute",
-    left: 11,
-    top: 24,
-    width: 2,
-    height: 40,
-    backgroundColor: "#666",
-  },
-  stepLineCompleted: {
-    backgroundColor: "#DC2626",
-  },
-  statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 0,
-    marginTop: 0,
-  },
-  statusLabel: {
-    fontSize: 16,
-    color: "#666",
-    marginRight: 8,
-    fontFamily: "Livvic_400Regular",
-  },
-  statusChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    fontFamily: "Livvic_700Bold",
-  },
-  okayButton: {
-    backgroundColor: "#DC2626",
-    paddingVertical: 16,
-    borderRadius: 25,
-    alignItems: "center",
-    marginBottom: 50,
-  },
-  okayButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "Livvic_700Bold",
-  },
-  callcontainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: "#B25E09",
-    borderRadius: 30,
-    width: 150,
-  },
-  buttonText: {
-    color: "#B25E09",
-    fontSize: 16,
-    marginLeft: 8,
-    fontWeight: "500",
-  },
-});
+import * as Location from "expo-location";
 
-const StatusStep = ({
-  title,
-  description,
-  isCompleted,
-  isCurrent,
-  isLast,
-  theme,
-}) => {
-  const styles = getStyles(theme);
+const { width } = Dimensions.get("window");
+
+const darkMapStyle = [
+  {
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#212121",
+      },
+    ],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#757575",
+      },
+    ],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [
+      {
+        color: "#212121",
+      },
+    ],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.fill",
+    stylers: [
+      {
+        color: "#2c2c2c",
+      },
+    ],
+  },
+];
+
+const CustomMarker = ({ icon, color }) => {
   return (
-    <View style={styles.stepContainer}>
-      <View style={styles.stepContent}>
-        <View
-          style={[
-            styles.stepIcon,
-            isCompleted && styles.stepIconCompleted,
-            isCurrent && styles.stepIconCurrent,
-          ]}
-        >
-          {isCompleted && <Icon name="check-circle" size={16} color="#fff" />}
-          {isCurrent && <View style={styles.currentDot} />}
-          {!isCompleted && !isCurrent && <View style={styles.inactiveDot} />}
-        </View>
-        <View style={styles.stepText}>
-          <Text
-            style={[
-              styles.stepTitle,
-              { color: theme === "light" ? "#000" : "#fff" },
-            ]}
-          >
-            {title}
-          </Text>
-          <Text
-            style={[
-              styles.stepDescription,
-              { color: theme === "light" ? "#666" : "#999" },
-            ]}
-          >
-            {description}
-          </Text>
-        </View>
-      </View>
-      {!isLast && (
-        <View
-          style={[styles.stepLine, isCompleted && styles.stepLineCompleted]}
-        />
-      )}
+    <View
+      style={{
+        backgroundColor: "rgba(0,0,0,0.7)",
+        padding: 8,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: color,
+      }}
+    >
+      <Icon name={icon} size={20} color={color} />
     </View>
   );
 };
 
+const getStyles = (theme) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
+    },
+    container: {
+      flex: 1,
+      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
+    },
+    headerBelow: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 20,
+      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor:
+        theme === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)",
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 16,
+    },
+    headerTitle: {
+      fontSize: 20,
+      color: theme === "light" ? "#000000" : "#FFFFFF",
+      fontFamily: "Poppins_700Bold",
+    },
+    map: {
+      width: width,
+      height: width * 0.5,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollViewContent: {
+      flexGrow: 1,
+      paddingBottom: 80,
+    },
+    contentContainer: {
+      padding: 20,
+    },
+    infoCard: {
+      backgroundColor: theme === "light" ? "#F3F4F6" : "rgba(32, 33, 35, 0.9)",
+      borderRadius: 12,
+      padding: 20,
+      marginBottom: 16,
+    },
+    infoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor:
+        theme === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)",
+    },
+    infoIcon: {
+      width: 24,
+      marginRight: 12,
+    },
+    infoLabel: {
+      color: theme === "light" ? "#000000" : "#FFFFFF",
+      fontSize: 16,
+      fontFamily: "Livvic_400Regular",
+    },
+    infoValue: {
+      color: theme === "light" ? "#6B7280" : "#9CA3AF",
+      fontSize: 16,
+      fontFamily: "Livvic_400Regular",
+      marginLeft: "auto",
+    },
+    actionButtons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      backgroundColor: theme === "light" ? "#F3F4F6" : "rgba(32, 33, 35, 0.9)",
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+    },
+    actionButton: {
+      alignItems: "center",
+      flex: 1,
+    },
+    actionButtonText: {
+      color: theme === "light" ? "#000000" : "#FFFFFF",
+      marginTop: 4,
+      fontSize: 14,
+      fontFamily: "Livvic_400Regular",
+    },
+    separator: {
+      width: 1,
+      backgroundColor:
+        theme === "light" ? "rgba(0, 0, 0, 0.1)" : "rgba(255, 255, 255, 0.1)",
+      marginHorizontal: 8,
+    },
+    callButtons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+    },
+    callButton: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: theme === "light" ? "#F3F4F6" : "rgba(32, 33, 35, 0.9)",
+      borderRadius: 25,
+      padding: 12,
+      marginHorizontal: 8,
+    },
+    callButtonText: {
+      color: "#B25E09",
+      marginLeft: 8,
+      fontSize: 16,
+      fontFamily: "Livvic_400Regular",
+    },
+    okayButtonContainer: {
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 20,
+      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
+    },
+    okayButton: {
+      backgroundColor: "#DC2626",
+      borderRadius: 25,
+      padding: 16,
+      alignItems: "center",
+    },
+    okayButtonText: {
+      color: "#FFFFFF",
+      fontSize: 16,
+      fontFamily: "Poppins_700Bold",
+    },
+  });
+
 const TrackOrderScreen = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
   const styles = getStyles(theme);
-  const [orderStatus, setOrderStatus] = React.useState(3); // 0: none, 1: confirmed, 2: pickup, 3: in progress, 4: delivered
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [shopLocation, setShopLocation] = useState(null);
+  const [homeLocation, setHomeLocation] = useState(null);
+  const mapRef = useRef(null);
+
+  // Note: Replace 'YOUR_GOOGLE_MAPS_API_KEY' with your actual Google Maps API key
+  const GOOGLE_MAPS_API_KEY = "AIzaSyADUgvqdCAHwvxaJaZVJCM7D6ozWai3lQY";
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setCurrentLocation(location.coords);
+
+      // Set shop and home locations
+      setShopLocation({
+        latitude: location.coords.latitude + 0.04,
+        longitude: location.coords.longitude + 0.04,
+      });
+      setHomeLocation({
+        latitude: location.coords.latitude - 0.01,
+        longitude: location.coords.longitude - 0.01,
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (currentLocation && shopLocation && homeLocation && mapRef.current) {
+      mapRef.current.fitToCoordinates(
+        [currentLocation, shopLocation, homeLocation],
+        {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+          animated: true,
+        },
+      );
+    }
+  }, [currentLocation, shopLocation, homeLocation]);
+
+  let [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_700Bold,
+    Livvic_400Regular,
+    Livvic_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   const handlePhoneCall = async () => {
     setIsLoading(true);
@@ -268,158 +287,181 @@ const TrackOrderScreen = ({ navigation }) => {
     }
   };
 
-  const riderId = 100;
-
-  let [fontsLoaded] = useFonts({
-    Livvic_400Regular,
-    Livvic_700Bold,
-  });
-
-  if (!fontsLoaded) {
-    return <AppLoading />;
-  }
-
-  const steps = [
-    {
-      title: "Order confirmed",
-      description: "Restaurant has confirmed your delivery",
-    },
-    {
-      title: "Order pickup",
-      description: "Rider has picked up your delivery",
-    },
-    {
-      title: "Inprogress",
-      description: "Delivery in process",
-    },
-    {
-      title: "Delivered",
-      description: "Customer have received there delivery",
-    },
-  ];
-
-  const getStatusText = () => {
-    switch (orderStatus) {
-      case 1:
-        return "Confirmed";
-      case 2:
-        return "Pickup";
-      case 3:
-        return "Inprogess";
-      case 4:
-        return "Completed";
-      default:
-        return "Pending";
-    }
-  };
-
-  const getStatusColor = () => {
-    if (orderStatus === 4) return "#22C55E";
-    if (orderStatus === 3) return "#FFA500";
-    if (orderStatus > 0) return "#DC2626";
-    return "#666";
-  };
-
   return (
-    <ImageBackground
-      source={trackerImage}
-      style={[
-        styles.background,
-        // { opacity: theme === 'light' ? 0.1 : 0.05 }
-      ]}
-    >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <View style={styles.backButton}>
-              <Icon name="chevron-left" color="#fff" size={24} /><Text>{" "}</Text>
-              
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Track Order</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.headerBelow}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Notification")}
-            style={styles.iconButton}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <Icon name="bell" color="#fff" size={24} />  
+            <Icon
+              name="chevron-left"
+              color={theme === "light" ? "#000000" : "#FFFFFF"}
+              size={24}
+            />
           </TouchableOpacity>
+          <Text style={styles.headerTitle}>On-Going</Text>
         </View>
 
-        <ScrollView style={styles.card}>
-          <View style={styles.Borderedcard}>
-            <Text style={[styles.cardTitle, styles.text]}>
-              Track Your Order
-            </Text>
-            <Text style={[styles.cardSubtitle, styles.subtext]}>
-              Stay Updated on the Status of Your order
-            </Text>
-
-            <View style={styles.stepsContainer}>
-              {steps.map((step, index) => (
-                <StatusStep
-                  key={index}
-                  title={step.title}
-                  description={step.description}
-                  isCompleted={orderStatus > index + 1}
-                  isCurrent={orderStatus === index + 1}
-                  isLast={index === steps.length - 1}
-                  theme={theme}
+        {currentLocation && shopLocation && homeLocation &&
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              ...currentLocation,
+              latitudeDelta: 0.05,
+              longitudeDelta: 0.05,
+            }}
+            customMapStyle={theme === "light" ? [] : darkMapStyle}
+            mapType="standard"
+            showsBuilding={true}
+            showsTraffic
+          
+          
+          >
+          
+            <MapViewDirections
+              origin={shopLocation}
+              destination={homeLocation}
+              apikey={GOOGLE_MAPS_API_KEY}
+              strokeWidth={4}
+              strokeColor="#22C55E"
+              optimizeWaypoints={true}
+            />
+            <MapViewDirections
+              origin={currentLocation}
+              destination={shopLocation}
+              apikey={GOOGLE_MAPS_API_KEY}
+              strokeWidth={8}
+              strokeColor="#FDB813"
+              optimizeWaypoints={true}
+            />
+            
+            <Marker coordinate={currentLocation}>
+              <CustomMarker icon="navigation" color="#FDB813" />
+            </Marker>
+            <Marker coordinate={shopLocation}>
+              <CustomMarker icon="shopping-bag" color="#DC2626" />
+            </Marker>
+            <Marker coordinate={homeLocation}>
+              <CustomMarker icon="home" color="#22C55E" />
+            </Marker>
+          </MapView>
+        }
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={true}
+          indicatorStyle={theme === "light" ? "black" : "white"}
+        >
+          <View style={styles.contentContainer}>
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Icon
+                  name="clock"
+                  size={20}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                  style={styles.infoIcon}
                 />
-              ))}
-            </View>
-            <View style={styles.statusContainer}>
-              <Text style={styles.statusLabel}>Status:</Text>
-              <View
-                style={[
-                  styles.statusChip,
-                  {
-                    backgroundColor: orderStatus === 4 ? "#22C55E" : "#FFA500",
-                  },
-                ]}
-              >
-                <Text style={[styles.statusText, { color: "#101112" }]}>
-                  {getStatusText()}
+                <Text style={[styles.infoLabel,{
+                  backgroundColor: '#FFA500',
+                  paddingHorizontal: 5,
+                  paddingVertical:5,
+                  color: '#000',
+                  fontWeight: "bold",
+                  fontFamily: "Livvic_700Bold",
+                  borderRadius:10,
+                  fontSize:12
+                }]}>On Going</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Icon
+                  name="user"
+                  size={20}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                  style={styles.infoIcon}
+                />
+                <Text style={styles.infoLabel}>Customer Name</Text>
+                <Text style={styles.infoValue}>Jon Snow</Text>
+              </View>
+              <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
+                <Icon
+                  name="map-pin"
+                  size={20}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                  style={styles.infoIcon}
+                />
+                <Text style={styles.infoLabel}>
+                  41B Sasegbon Street, GRA, Ikeja
                 </Text>
               </View>
             </View>
+
+            <View style={styles.actionButtons}>
+              <TouchableOpacity style={styles.actionButton}>
+                <Icon
+                  name="phone"
+                  size={24}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                />
+                <Text style={styles.actionButtonText}>Contact</Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              <TouchableOpacity style={styles.actionButton}>
+                <Icon
+                  name="map"
+                  size={24}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                />
+                <Text style={styles.actionButtonText}>Get Directions</Text>
+              </TouchableOpacity>
+              <View style={styles.separator} />
+              <TouchableOpacity style={styles.actionButton}>
+                <Icon
+                  name="file-text"
+                  size={24}
+                  color={theme === "light" ? "#000000" : "#FFFFFF"}
+                />
+                <Text style={styles.actionButtonText}>Details</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.callButtons}>
+              <TouchableOpacity
+                style={styles.callButton}
+                onPress={() => navigation.push("CallScreen", { riderId: 100 })}
+              >
+                <Icon name="phone" size={20} color="#A45C27" />
+                <Text style={styles.callButtonText}>In app Call</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.callButton}
+                onPress={handlePhoneCall}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#A45C27" />
+                ) : (
+                  <>
+                    <Icon name="phone" size={20} color="#A45C27" />
+                    <Text style={styles.callButtonText}>Phone Call</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
+        </ScrollView>
 
-          <View style={styles.callcontainer}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.push("CallScreen", { riderId: riderId })
-              }
-              style={styles.button}
-            >
-              <Icon name="phone" size={20} color="#A45C27" />
-
-              <Text style={styles.buttonText}>In app Call</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handlePhoneCall}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="#A45C27" />
-              ) : (
-                <>
-                  <Icon name="phone" size={20} color="#A45C27" />
-
-                  <Text style={styles.buttonText}>Phone Call</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
+        <View style={styles.okayButtonContainer}>
           <TouchableOpacity
             style={styles.okayButton}
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.okayButtonText}>Okay</Text>
           </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
-    </ImageBackground>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

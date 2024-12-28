@@ -1,130 +1,26 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
+  ScrollView,
   SafeAreaView,
-  Dimensions,
-} from "react-native";
+  StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { useFonts } from "expo-font";
+import { ThemeContext } from '../context/AuthContext';
 import {
-  Poppins_400Regular,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins";
-import { Livvic_400Regular, Livvic_700Bold } from "@expo-google-fonts/livvic";
+  useFonts,
+  Livvic_400Regular,
+  Livvic_700Bold,
+} from '@expo-google-fonts/livvic';
 import AppLoading from '../components/Loader';
-import { ThemeContext } from "../context/AuthContext";
-import { ScrollView } from "react-native";
 
-const { width } = Dimensions.get("window");
-
-const ordersData = [
-  {
-    id: "264100",
-    items: 2,
-    estimatedTime: 15,
-    status: "ongoing",
-    restaurantName: "Chicken Republic",
-    restaurantLogo: "https://indulgetix.com/tiva/1.png",
-  },
-  {
-    id: "264101",
-    items: 3,
-    estimatedTime: 20,
-    status: "ongoing",
-    restaurantName: "Pizza Hut",
-    restaurantLogo: "https://indulgetix.com/tiva/2.png",
-  },
-  {
-    id: "264102",
-    items: 1,
-    estimatedTime: 10,
-    status: "delivered",
-    restaurantName: "Burger King",
-    restaurantLogo: "https://indulgetix.com/tiva/3.png",
-  },
-  {
-    id: "264101",
-    items: 3,
-    estimatedTime: 20,
-    status: "ongoing",
-    restaurantName: "Pizza Hut",
-    restaurantLogo: "https://indulgetix.com/tiva/2.png",
-  },
-  {
-    id: "264102",
-    items: 1,
-    estimatedTime: 10,
-    status: "delivered",
-    restaurantName: "Burger King",
-    restaurantLogo: "https://indulgetix.com/tiva/3.png",
-  },
-];
-const OrderCard = ({
-  orderNumber,
-  items,
-  estimatedTime,
-  status,
-  onCancel,
-  onTrack,
-  theme,
-}) => {
-  const styles = getStyles(theme);
-  return (
-    <View style={styles.orderCard}>
-      <View style={styles.orderHeader}>
-        <View style={styles.restaurantInfo}>
-          <Image
-            source={{ uri: "https://indulgetix.com/tiva/1.png" }}
-            style={styles.restaurantLogo}
-          />
-          <View style={styles.orderDetails}>
-            <Text style={styles.itemCount}>{items} Items</Text>
-            <View style={styles.restaurantName}>
-              <Text style={styles.restaurantText}>Chicken Republic</Text>
-              <View style={styles.verifiedBadge} />
-            </View>
-          </View>
-        </View>
-        <Text style={styles.orderNumber}>#{orderNumber}</Text>
-      </View>
-
-      <View style={styles.estimatedTimeContainer}>
-        <View>
-          <Text style={styles.estimatedLabel}>Estimated Arrival</Text>
-          <View style={styles.timeContainer}>
-            <Text style={styles.timeNumber}>{estimatedTime}</Text>
-            <Text style={styles.timeUnit}>min</Text>
-          </View>
-        </View>
-        <Text style={styles.statusText}>
-          {status === "delivered" ? "Delivered" : "Food on the way"}
-        </Text>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-          <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.trackButton} onPress={onTrack}>
-          <Text style={styles.trackButtonText}>Track Order</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-const OrdersScreen = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState("upcoming");
+const History = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
-  const styles = getStyles(theme);
 
   let [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_700Bold,
     Livvic_400Regular,
     Livvic_700Bold,
   });
@@ -133,57 +29,86 @@ const OrdersScreen = ({ navigation }) => {
     return <AppLoading />;
   }
 
+  const styles = getStyles(theme);
+
+  const historyData = [
+    {
+      id: '31/01/2023',
+      name: 'Nikolas Jackson',
+      tripId: '#0CAC6C64',
+      pickup: 'Chicken Republic',
+      dropoff: '41B Remi Fani Kayode Street',
+      distance: '5.36km',
+      duration: '10min',
+    },
+    {
+      id: '31/01/2023',
+      name: 'Jadon Sancho',
+      tripId: '#0CAC6C64',
+      pickup: 'Chicken Republic',
+      dropoff: '41B Remi Fani Kayode Street',
+      distance: '5.36km',
+      duration: '10min',
+    },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle={theme === 'light' ? 'dark-content' : 'light-content'} />
       <View style={styles.container}>
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            style={[styles.tab, activeTab === "upcoming" && styles.activeTab]}
-            onPress={() => setActiveTab("upcoming")}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "upcoming" && styles.activeTabText,
-              ]}
-            >
-              Upcoming
-            </Text>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="chevron-left" size={24} color={theme === 'light' ? '#000' : '#fff'} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, activeTab === "history" && styles.activeTab]}
-            onPress={() => setActiveTab("history")}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "history" && styles.activeTabText,
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
+          <Text style={styles.headerTitle}>History</Text>
         </View>
 
-        <ScrollView style={styles.content}>
-          {ordersData.map((order,index) => (
-            <OrderCard
-              key={index}
-              orderNumber={order.id}
-              items={order.items}
-              estimatedTime={order.estimatedTime}
-              status={order.status}
-              restaurantName={order.restaurantName}
-              restaurantLogo={order.restaurantLogo}
-              onCancel={() => console.log(`Cancel order ${order.id}`)}
-              onTrack={() =>
-                {
-                  console.log(`Tracking ${order.id}`)
-                navigation.navigate("TrackOrder", { orderId: order.id });
-                }
-              }
-              theme={theme}
-            />
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <Text style={styles.sectionTitle}>Yesterday</Text>
+          
+          {historyData.map((item, index) => (
+            <View key={index} style={styles.tripCard}>
+              <View style={styles.tripHeader}>
+                <View style={styles.tripHeaderLeft}>
+                  <Text style={styles.tripName}>{item.name}</Text>
+                  <Text style={styles.tripId}>{item.tripId}</Text>
+                </View>
+                <Text style={styles.tripDate}>{item.id}</Text>
+              </View>
+
+              <View style={styles.locationContainer}>
+                <View style={styles.locationItem}>
+                  <Icon name="circle" size={10} color="#4CAF50" />
+                  <Text style={styles.locationText}>{item.pickup}</Text>
+                </View>
+                <View style={styles.locationItem}>
+                  <Icon name="circle" size={10} color="#f44336" />
+                  <Text style={styles.locationText}>{item.dropoff}</Text>
+                </View>
+              </View>
+
+              <View style={styles.tripFooter}>
+                <View style={styles.tripInfo}>
+                  <Icon name="repeat" size={14} color={theme === 'light' ? '#666' : '#888'} />
+                  <Text style={styles.tripInfoText}>Round Trip</Text>
+                </View>
+                <View style={styles.tripInfo}>
+                  <Icon name="map" size={14} color={theme === 'light' ? '#666' : '#888'} />
+                  <Text style={styles.tripInfoText}>{item.distance}</Text>
+                </View>
+                <View style={styles.tripInfo}>
+                  <Icon name="clock" size={14} color={theme === 'light' ? '#666' : '#888'} />
+                  <Text style={styles.tripInfoText}>{item.duration}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity 
+                style={styles.detailsButton}
+                onPress={() => navigation.navigate('RideDetails', { tripId: item.tripId })}
+              >
+                <Text style={styles.detailsButtonText}>Details</Text>
+              </TouchableOpacity>
+            </View>
           ))}
         </ScrollView>
       </View>
@@ -191,183 +116,121 @@ const OrdersScreen = ({ navigation }) => {
   );
 };
 
-const getStyles = (theme) =>
-  StyleSheet.create({
-    safeArea: {
-      flex: 1,
-      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
-    },
-    container: {
-      paddingTop: 20,
-      flex: 1,
-      backgroundColor: theme === "light" ? "#FFFFFF" : "#101112",
-    },
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: 20,
-    },
-    headerTitle: {
-      fontSize: 25,
-      fontWeight: "bold",
-      color: theme === "light" ? "#000" : "#fff",
-      fontFamily: "Livvic_700Bold",
-    },
-    tabContainer: {
-      flexDirection: "row",
-      justifyContent: "center",
-      paddingHorizontal: 20,
-      marginBottom: 20,
-    },
-    tab: {
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 25,
-      marginRight: 10,
-    },
-    activeTab: {
-      backgroundColor: "#DC2626",
-    },
-    tabText: {
-      color: theme === "light" ? "#666" : "#999",
-      fontSize: 16,
-      fontFamily: "Livvic_400Regular",
-    },
-    activeTabText: {
-      color: "#fff",
-      fontFamily: "Livvic_700Bold",
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: 15,
-      gap: 20,
-    },
-    orderCard: {
-      backgroundColor: theme === "light" ? "#fff" : "#2A2A2A",
-      borderRadius: 12,
-      padding: 15,
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-      marginBottom:10,
-      marginTop:10,
-    },
-    orderHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-      marginBottom: 15,
-    },
-    restaurantInfo: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    restaurantLogo: {
-      width: 40,
-      height: 40,
-      borderRadius: 8,
-    },
-    orderDetails: {
-      marginLeft: 10,
-    },
-    itemCount: {
-      fontSize: 14,
-      color: theme === "light" ? "#666" : "#999",
-      fontFamily: "Livvic_400Regular",
-    },
-    restaurantName: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    restaurantText: {
-      fontSize: 16,
-      fontWeight: "600",
-      marginRight: 5,
-      color: theme === "light" ? "#000" : "#fff",
-      fontFamily: "Livvic_700Bold",
-    },
-    verifiedBadge: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      backgroundColor: "#22C55E",
-    },
-    orderNumber: {
-      fontSize: 14,
-      color: "#DC2626",
-      fontFamily: "Livvic_400Regular",
-    },
-    estimatedTimeContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 15,
-    },
-    estimatedLabel: {
-      fontSize: 14,
-      color: theme === "light" ? "#666" : "#999",
-      marginBottom: 5,
-      fontFamily: "Livvic_400Regular",
-    },
-    timeContainer: {
-      flexDirection: "row",
-      alignItems: "baseline",
-    },
-    timeNumber: {
-      fontSize: 24,
-      fontWeight: "bold",
-      marginRight: 5,
-      color: theme === "light" ? "#000" : "#fff",
-      fontFamily: "Livvic_700Bold",
-    },
-    timeUnit: {
-      fontSize: 16,
-      color: theme === "light" ? "#666" : "#999",
-      fontFamily: "Livvic_400Regular",
-    },
-    statusText: {
-      fontSize: 16,
-      color: theme === "light" ? "#666" : "#999",
-      fontFamily: "Livvic_400Regular",
-    },
-    buttonContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      gap: 10,
-    },
-    cancelButton: {
-      flex: 1,
-      paddingVertical: 12,
-      borderRadius: 25,
-      borderWidth: 1,
-      borderColor: "#DC2626",
-      alignItems: "center",
-    },
-    cancelButtonText: {
-      color: "#DC2626",
-      fontSize: 16,
-      fontWeight: "600",
-      fontFamily: "Livvic_700Bold",
-    },
-    trackButton: {
-      flex: 1,
-      paddingVertical: 12,
-      borderRadius: 25,
-      backgroundColor: "#DC2626",
-      alignItems: "center",
-    },
-    trackButtonText: {
-      color: "#fff",
-      fontSize: 16,
-      fontWeight: "600",
-      fontFamily: "Livvic_700Bold",
-    },
-  });
+const getStyles = (theme) => StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: theme === 'light' ? '#FFFFFF' : '#101112',
+  },
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: theme === 'light' ? '#f0f0f0' : '#2C2C2C',
+  },
+  backButton: {
+    padding: 5,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontFamily: 'Livvic_700Bold',
+    color: theme === 'light' ? '#000' : '#fff',
+    marginLeft: 15,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'Livvic_700Bold',
+    color: theme === 'light' ? '#000' : '#fff',
+    marginBottom: 15,
+  },
+  tripCard: {
+    backgroundColor: theme === 'light' ? '#f9f9f9' : '#1E1E1E',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: theme === 'light' ? '#000' : '#fff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tripHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  tripHeaderLeft: {
+    flex: 1,
+  },
+  tripName: {
+    fontSize: 16,
+    fontFamily: 'Livvic_700Bold',
+    color: theme === 'light' ? '#000' : '#fff',
+  },
+  tripId: {
+    fontSize: 14,
+    fontFamily: 'Livvic_400Regular',
+    color: theme === 'light' ? '#666' : '#888',
+    marginTop: 2,
+  },
+  tripDate: {
+    fontSize: 14,
+    fontFamily: 'Livvic_400Regular',
+    color: '#f44336',
+  },
+  locationContainer: {
+    marginBottom: 15,
+  },
+  locationItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  locationText: {
+    fontSize: 14,
+    fontFamily: 'Livvic_400Regular',
+    color: theme === 'light' ? '#333' : '#ccc',
+    marginLeft: 10,
+  },
+  tripFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: theme === 'light' ? '#eee' : '#333',
+  },
+  tripInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tripInfoText: {
+    fontSize: 13,
+    fontFamily: 'Livvic_400Regular',
+    color: theme === 'light' ? '#666' : '#888',
+    marginLeft: 5,
+  },
+  detailsButton: {
+    alignItems: 'center',
+    marginTop: 15,
+    paddingVertical: 8,
+    backgroundColor: theme === 'light' ? '#f0f0f0' : '#2C2C2C',
+    borderRadius: 8,
+  },
+  detailsButtonText: {
+    fontSize: 14,
+    fontFamily: 'Livvic_700Bold',
+    color: '#4A90E2',
+  },
+});
 
-export default OrdersScreen;
+export default History;
+

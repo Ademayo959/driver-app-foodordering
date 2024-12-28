@@ -144,10 +144,8 @@ export default function MenuOverlay({ isOpen, onClose, translateX }) {
   const menuItems = [
     { icon: <Icon name="shopping-bag" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "My Orders", screen: "Orders" },
     { icon: <Icon name="user" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "My Profile", screen: "Profile" },
-    { icon: <Icon name="credit-card" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "Payment Methods", screen: "PaymentMethods" },
+    { icon: <Icon name="credit-card" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "Withdrawal Method", screen: "PaymentMethods" },
     { icon: <Icon name="bell" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "Notification", screen: "Notification" },
-    { icon: <Icon name="heart" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "My Favorites", screen: "Favorites" },
-    { icon: <Icon name="map-pin" color={theme === "light" ? "#000" : "#fff"} size={24} />, title: "Delivery Address", screen: "DeliveryAddress" },
     {
       icon: theme === "light" ? <Icon name="moon" color={theme === "light" ? "#000" : "#fff"} size={24} /> : <Icon name="sun" color={theme === "light" ? "#000" : "#fff"} size={24} />,
       title: `${theme === "light" ? "Dark" : "Light"} Mode`,

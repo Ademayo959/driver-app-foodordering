@@ -11,21 +11,21 @@ import {
   TextInput,
   Alert
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Feather';
 import { ThemeContext } from '../context/AuthContext';
 import { useFonts, Livvic_400Regular, Livvic_700Bold } from '@expo-google-fonts/livvic';
 import AppLoading from '../components/Loader';
 
-const PaymentMethod = ({ navigation }) => {
+const BankAccounts = ({ navigation }) => {
   const { theme } = useContext(ThemeContext);
   const [showForm, setShowForm] = useState(false);
-  const [editingCard, setEditingCard] = useState(null);
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cards, setCards] = useState([
-    { id: '1', number: '1234', type: 'Visa', expiry: '06/2024' },
-    { id: '2', number: '5678', type: 'Mastercard', expiry: '08/2025' },
+  const [editingAccount, setEditingAccount] = useState(null);
+  const [accountNumber, setAccountNumber] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [accounts, setAccounts] = useState([
+    { id: '1', number: '1234', bank: 'Bank A', name: 'Savings Account' },
+    { id: '2', number: '5678', bank: 'Bank B', name: 'Checking Account' },
   ]);
   
   let [fontsLoaded] = useFonts({
@@ -39,56 +39,61 @@ const PaymentMethod = ({ navigation }) => {
 
   const styles = getStyles(theme);
 
-  const handleAddCard = () => {
+  const handleAddAccount = () => {
     setShowForm(true);
-    setEditingCard(null);
-    setCardNumber('');
-    setExpiryDate('');
-    setCvv('');
+    setEditingAccount(null);
+    setAccountNumber('');
+    setBankName('');
   };
 
-  const handleEditCard = (card) => {
+  const handleEditAccount = (account) => {
     setShowForm(true);
-    setEditingCard(card);
-    setCardNumber(card.number);
-    setExpiryDate(card.expiry);
-    setCvv('');
+    setEditingAccount(account);
+    setAccountNumber(account.number);
+    setBankName(account.bank);
   };
 
-  const handleDeleteCard = (cardId) => {
+  const handleDeleteAccount = (accountId) => {
     Alert.alert(
-      "Delete Card",
-      "Are you sure you want to delete this card?",
+      "Delete Account",
+      "Are you sure you want to delete this account?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "Delete", onPress: () => {
-          setCards(cards.filter(card => card.id !== cardId));
+          setAccounts(accounts.filter(account => account.id !== accountId));
         }}
       ]
     );
   };
 
+  const generateRandomAccountName = () => {
+    const adjectives = ['Quick', 'Smart', 'Bright', 'Swift', 'Easy'];
+    const nouns = ['Savings', 'Checking', 'Deposit', 'Transfer', 'Invest'];
+    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    return `${randomAdjective} ${randomNoun}`;
+  };
+
   const handleSave = () => {
-    if (editingCard) {
-      setCards(cards.map(card => 
-        card.id === editingCard.id 
-          ? { ...card, number: cardNumber, expiry: expiryDate }
-          : card
+    if (editingAccount) {
+      setAccounts(accounts.map(account => 
+        account.id === editingAccount.id 
+          ? { ...account, number: accountNumber, bank: bankName }
+          : account
       ));
     } else {
-      const newCard = {
+      const newAccount = {
         id: Date.now().toString(),
-        number: cardNumber,
-        type: 'New Card',
-        expiry: expiryDate,
+        number: accountNumber,
+        bank: bankName,
+        name: generateRandomAccountName(),
       };
-      setCards([...cards, newCard]);
+      setAccounts([...accounts, newAccount]);
     }
     setShowForm(false);
-    setEditingCard(null);
-    setCardNumber('');
-    setExpiryDate('');
-    setCvv('');
+    setEditingAccount(null);
+    setAccountNumber('');
+    setBankName('');
   };
 
   return (
@@ -101,27 +106,27 @@ const PaymentMethod = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="chevron-left" color={theme === 'light' ? '#000' : '#fff'} size={24} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Payment method</Text>
+          <Text style={styles.headerTitle}>Bank Accounts</Text>
         </View>
         
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-          <Text style={styles.sectionTitle}>Card details</Text>
-          <Text style={styles.sectionSubtitle}>Select default payment method below.</Text>
+          <Text style={styles.sectionTitle}>Account details</Text>
+          <Text style={styles.sectionSubtitle}>Manage your bank accounts below.</Text>
           
-          {cards.map((card) => (
-            <View key={card.id} style={styles.cardContainer}>
-              <View style={styles.cardInfo}>
-                <Icon name="credit-card" color={theme === 'light' ? '#000' : '#fff'} size={24} />
-                <View style={styles.cardDetails}>
-                  <Text style={styles.cardNumber}>{card.type} ending in {card.number}</Text>
-                  <Text style={styles.cardExpiry}>Expiry {card.expiry}</Text>
+          {accounts.map((account) => (
+            <View key={account.id} style={styles.accountContainer}>
+              <View style={styles.accountInfo}>
+                <Icon name="briefcase" color={theme === 'light' ? '#000' : '#fff'} size={24} />
+                <View style={styles.accountDetails}>
+                  <Text style={styles.accountName}>{account.name}</Text>
+                  <Text style={styles.accountNumber}>{account.bank} - {account.number}</Text>
                 </View>
               </View>
-              <View style={styles.cardActions}>
-                <TouchableOpacity onPress={() => handleEditCard(card)}>
+              <View style={styles.accountActions}>
+                <TouchableOpacity onPress={() => handleEditAccount(account)}>
                   <Text style={styles.editButton}>Edit</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDeleteCard(card.id)}>
+                <TouchableOpacity onPress={() => handleDeleteAccount(account.id)}>
                   <Text style={styles.deleteButton}>Delete</Text>
                 </TouchableOpacity>
               </View>
@@ -129,56 +134,45 @@ const PaymentMethod = ({ navigation }) => {
           ))}
           
           {!showForm && (
-            <TouchableOpacity style={styles.addCardButton} onPress={handleAddCard}>
+            <TouchableOpacity style={styles.addAccountButton} onPress={handleAddAccount}>
               <Icon name="plus" color={theme === 'light' ? '#f44336' : '#ff7961'} size={24} />
-              <Text style={styles.addCardButtonText}>Add new card</Text>
+              <Text style={styles.addAccountButtonText}>Add new account</Text>
             </TouchableOpacity>
           )}
           
           {showForm && (
             <View style={styles.formContainer}>
               <View style={styles.formHeader}>
-                <Text style={styles.formTitle}>{editingCard ? 'Edit Card' : 'Add New Card'}</Text>
+                <Text style={styles.formTitle}>{editingAccount ? 'Edit Account' : 'Add New Account'}</Text>
                 <TouchableOpacity onPress={() => setShowForm(false)}>
                   <Icon name="x" color={theme === 'light' ? '#000' : '#fff'} size={24} />
                 </TouchableOpacity>
               </View>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Card Number</Text>
+                <Text style={styles.label}>Account Number</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="1234 5678 9012 3456"
+                  placeholder="Enter account number"
                   placeholderTextColor={theme === 'light' ? '#999' : '#666'}
                   keyboardType="numeric"
-                  value={cardNumber}
-                  onChangeText={setCardNumber}
+                  value={accountNumber}
+                  onChangeText={setAccountNumber}
                 />
               </View>
               
-              <View style={styles.rowContainer}>
-                <View style={[styles.inputContainer, styles.halfWidth]}>
-                  <Text style={styles.label}>Expiry Date</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="MM/YY"
-                    placeholderTextColor={theme === 'light' ? '#999' : '#666'}
-                    keyboardType="numeric"
-                    value={expiryDate}
-                    onChangeText={setExpiryDate}
-                  />
-                </View>
-                <View style={[styles.inputContainer, styles.halfWidth]}>
-                  <Text style={styles.label}>CVV</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="123"
-                    placeholderTextColor={theme === 'light' ? '#999' : '#666'}
-                    keyboardType="numeric"
-                    secureTextEntry
-                    value={cvv}
-                    onChangeText={setCvv}
-                  />
-                </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Bank Name</Text>
+                <Picker
+                  selectedValue={bankName}
+                  style={styles.picker}
+                  itemStyle={styles.picker}
+                  onValueChange={(itemValue) => setBankName(itemValue)}
+                >
+                  <Picker.Item label="Select a bank" value="" />
+                  <Picker.Item label="Bank A" value="Bank A" />
+                  <Picker.Item label="Bank B" value="Bank B" />
+                  <Picker.Item label="Bank C" value="Bank C" />
+                </Picker>
               </View>
             </View>
           )}
@@ -193,6 +187,7 @@ const PaymentMethod = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 
 const getStyles = (theme) => StyleSheet.create({
   safeArea: {
@@ -344,7 +339,58 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Livvic_700Bold',
   },
+  accountContainer: {
+    borderWidth: 1,
+    borderColor: theme === 'light' ? '#E0E0E0' : '#2C2C2C',
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 15,
+  },
+  accountInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  accountDetails: {
+    marginLeft: 15,
+  },
+  accountName: {
+    fontSize: 16,
+    fontFamily: 'Livvic_700Bold',
+    color: theme === 'light' ? '#000' : '#fff',
+  },
+  accountNumber: {
+    fontSize: 14,
+    fontFamily: 'Livvic_400Regular',
+    color: theme === 'light' ? '#666' : '#999',
+  },
+  accountActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  addAccountButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme === 'light' ? '#f44336' : '#ff7961',
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 20,
+  },
+  addAccountButtonText: {
+    color: theme === 'light' ? '#f44336' : '#ff7961',
+    fontSize: 16,
+    fontFamily: 'Livvic_700Bold',
+    marginLeft: 10,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: theme === 'light' ? '#E0E0E0' : '#2C2C2C',
+    borderRadius: 8,
+    backgroundColor: theme === 'light' ? '#fff' : '#1A1B1E',
+    color: theme === 'light' ? '#000' : '#fff',
+  },
 });
 
-export default PaymentMethod;
-
+export default BankAccounts;
